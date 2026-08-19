@@ -16,7 +16,7 @@ public class EmailCode {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "code_owner", nullable = false)
+    @JoinColumn(name = "code_owner_id", nullable = false)
     private UserAccount codeOwner;
 
     @Column(unique = true, nullable = false, length = 6)
