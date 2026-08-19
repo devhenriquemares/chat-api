@@ -1,5 +1,5 @@
 CREATE TABLE user_accounts (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY ,
     public_id VARCHAR(10) NOT NULL UNIQUE,
     username VARCHAR(255) NOT NULL,
     email VARCHAR NOT NULL UNIQUE,
