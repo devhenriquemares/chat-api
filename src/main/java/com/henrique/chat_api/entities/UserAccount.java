@@ -20,7 +20,7 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "public_id", nullable = false, unique = true)
+    @Column(name = "public_id", nullable = false, unique = true, length = 10)
     private String publicID;
 
     @Column(nullable = false)
@@ -42,7 +42,7 @@ public class UserAccount {
     @Column(nullable = false)
     private AccountProviders provider;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt = Instant.now();
 
     @OneToMany(mappedBy = "userAccount")
