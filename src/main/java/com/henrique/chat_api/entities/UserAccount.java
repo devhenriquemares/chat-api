@@ -2,18 +2,18 @@ package com.henrique.chat_api.entities;
 
 import com.henrique.chat_api.enums.AccountProviders;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @Table(name = "user_accounts")
 public class UserAccount {
     @Id
@@ -30,21 +30,35 @@ public class UserAccount {
     private String email;
 
     @Column(name = "is_verified")
+    @Builder.Default
     private boolean isVerified = false;
 
     @Column(name = "password_hash")
     private String passwordHash;
-
-    @Column(name = "password_salt")
-    private String passwordSalt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccountProviders provider;
 
     @Column(name = "created_at", updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @OneToMany(mappedBy = "userAccount")
+    @Builder.Default
     private Set<Friend> friends = new HashSet<>();
+
+    public static String generatePublicID() {
+        String CHARACTERS = """
+                ABCDEFGHIJKLMNOPQRSTUVWXYZ
+                abcdefghijklmnopqrstuvwxyz
+                1234567890
+                """;
+
+        return new Random()
+                .ints(6, 0, CHARACTERS.length())
+                .mapToObj(CHARACTERS::charAt)
+                .map(String::valueOf)
+                .collect(Collectors.joining());
+    }
 }
