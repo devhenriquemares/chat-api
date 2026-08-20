@@ -4,7 +4,7 @@ import com.henrique.chat_api.enums.AccountProviders;
 
 import java.time.Instant;
 
-public record UserResponse(
+public record UserResponseDTO(
         String username,
         String email,
         AccountProviders provider,

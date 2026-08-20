@@ -2,7 +2,7 @@ package com.henrique.chat_api.services;
 
 import com.henrique.chat_api.dtos.user.CreateLocalUserDTO;
 import com.henrique.chat_api.dtos.user.UpdateLocalUserDTO;
-import com.henrique.chat_api.dtos.user.UserResponse;
+import com.henrique.chat_api.dtos.user.UserResponseDTO;
 import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.enums.AccountProviders;
 import com.henrique.chat_api.exceptions.EmailAlreadyExistsException;
@@ -12,8 +12,6 @@ import com.henrique.chat_api.exceptions.UserNotFoundException;
 import com.henrique.chat_api.mappers.UserMapper;
 import com.henrique.chat_api.repositories.IUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +23,7 @@ public class UserService {
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse store(CreateLocalUserDTO request) {
+    public UserResponseDTO store(CreateLocalUserDTO request) {
         if(userRepository.existsByEmail(request.email())) throw new EmailAlreadyExistsException();
 
         String hashedPassword = passwordEncoder.encode(request.password());
@@ -41,7 +39,7 @@ public class UserService {
         return UserMapper.toResponse(user);
     }
 
-    public UserResponse findByID(UUID userID) {
+    public UserResponseDTO findByID(UUID userID) {
         UserAccount user = userRepository.findById(userID)
                 .orElseThrow(() -> new UserNotFoundException(userID));
 
