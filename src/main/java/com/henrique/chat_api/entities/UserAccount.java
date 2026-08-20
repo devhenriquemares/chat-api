@@ -56,7 +56,7 @@ public class UserAccount {
                 """;
 
         return new Random()
-                .ints(6, 0, CHARACTERS.length())
+                .ints(10, 0, CHARACTERS.length())
                 .mapToObj(CHARACTERS::charAt)
                 .map(String::valueOf)
                 .collect(Collectors.joining());

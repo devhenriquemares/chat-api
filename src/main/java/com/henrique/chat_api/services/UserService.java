@@ -1,15 +1,23 @@
 package com.henrique.chat_api.services;
 
 import com.henrique.chat_api.dtos.user.CreateLocalUserDTO;
+import com.henrique.chat_api.dtos.user.UpdateLocalUserDTO;
 import com.henrique.chat_api.dtos.user.UserResponse;
 import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.enums.AccountProviders;
+import com.henrique.chat_api.exceptions.EmailAlreadyExistsException;
+import com.henrique.chat_api.exceptions.InvalidPasswordException;
+import com.henrique.chat_api.exceptions.OldPasswordRequiredException;
+import com.henrique.chat_api.exceptions.UserNotFoundException;
 import com.henrique.chat_api.mappers.UserMapper;
 import com.henrique.chat_api.repositories.IUserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -18,8 +26,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserResponse store(CreateLocalUserDTO request) {
-        String hashedPassword = passwordEncoder.encode(request.password());
+        if(userRepository.existsByEmail(request.email())) throw new EmailAlreadyExistsException();
 
+        String hashedPassword = passwordEncoder.encode(request.password());
         UserAccount user = UserAccount.builder()
                 .username(request.username())
                 .email(request.email())
@@ -32,15 +41,33 @@ public class UserService {
         return UserMapper.toResponse(user);
     }
 
-    public void findByID() {
+    public UserResponse findByID(UUID userID) {
+        UserAccount user = userRepository.findById(userID)
+                .orElseThrow(() -> new UserNotFoundException(userID));
 
+        return UserMapper.toResponse(user);
     }
 
-    public void updateByID() {
+    public void updateByID(UUID userID, UpdateLocalUserDTO request) {
+        UserAccount user = userRepository.findById(userID)
+                .orElseThrow(() -> new UserNotFoundException(userID));
 
+        if (request.username() != null) user.setUsername(request.username());
+        if (request.email() != null) user.setEmail(request.email());
+        if (request.newPassword() != null) {
+            if (request.oldPassword() == null) throw new OldPasswordRequiredException();
+            if (!passwordEncoder.matches(request.oldPassword(), user.getPasswordHash())) throw new InvalidPasswordException();
+
+            user.setPasswordHash(passwordEncoder.encode(request.newPassword()));
+        }
+
+        userRepository.save(user);
     }
 
-    public void deleteByID() {
+    public void deleteByID(UUID userID) {
+        UserAccount user = userRepository.findById(userID)
+                .orElseThrow(() -> new UserNotFoundException(userID));
 
+        userRepository.delete(user);
     }
 }
