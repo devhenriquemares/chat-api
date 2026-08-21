@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
 import java.util.*;
@@ -15,7 +19,7 @@ import java.util.stream.Collectors;
 @Setter
 @Builder
 @Table(name = "user_accounts")
-public class UserAccount {
+public class UserAccount implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -23,8 +27,8 @@ public class UserAccount {
     @Column(name = "public_id", nullable = false, unique = true, length = 10)
     private String publicID;
 
-    @Column(nullable = false)
-    private String username;
+    @Column(name = "username", nullable = false)
+    private String name;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -48,6 +52,10 @@ public class UserAccount {
     @Builder.Default
     private Set<Friend> friends = new HashSet<>();
 
+    @OneToMany(mappedBy = "userAccount")
+    @Builder.Default
+    private Set<UserRole> roles = new HashSet<>();
+
     public static String generatePublicID() {
         String CHARACTERS = """
                 ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -60,5 +68,42 @@ public class UserAccount {
                 .mapToObj(CHARACTERS::charAt)
                 .map(String::valueOf)
                 .collect(Collectors.joining());
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getRole().name()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return passwordHash;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

@@ -23,12 +23,12 @@ public class UserService {
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponseDTO store(CreateLocalUserDTO request) {
+    public UserAccount store(CreateLocalUserDTO request) {
         if(userRepository.existsByEmail(request.email())) throw new EmailAlreadyExistsException();
 
         String hashedPassword = passwordEncoder.encode(request.password());
         UserAccount user = UserAccount.builder()
-                .username(request.username())
+                .name(request.username())
                 .email(request.email())
                 .passwordHash(hashedPassword)
                 .provider(AccountProviders.LOCAL)
@@ -36,6 +36,11 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+        return user;
+    }
+
+    public UserResponseDTO storeAndMap(CreateLocalUserDTO request) {
+        UserAccount user = store(request);
         return UserMapper.toResponse(user);
     }
 
@@ -50,7 +55,7 @@ public class UserService {
         UserAccount user = userRepository.findById(userID)
                 .orElseThrow(() -> new UserNotFoundException(userID));
 
-        if (request.username() != null) user.setUsername(request.username());
+        if (request.username() != null) user.setName(request.username());
         if (request.email() != null) user.setEmail(request.email());
         if (request.newPassword() != null) {
             if (request.oldPassword() == null) throw new OldPasswordRequiredException();

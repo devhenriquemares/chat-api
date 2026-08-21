@@ -26,7 +26,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody CreateLocalUserDTO request) {
-        UserResponseDTO response = userService.store(request);
+        UserResponseDTO response = userService.storeAndMap(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

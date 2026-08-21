@@ -5,6 +5,6 @@ import com.henrique.chat_api.entities.UserAccount;
 
 public class UserMapper {
     public static UserResponseDTO toResponse(UserAccount user) {
-        return new UserResponseDTO(user.getUsername(), user.getEmail(), user.getProvider(), user.getCreatedAt());
+        return new UserResponseDTO(user.getName(), user.getEmail(), user.getProvider(), user.getCreatedAt());
     }
 }
