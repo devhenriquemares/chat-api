@@ -38,6 +38,12 @@ public class JwtService {
         );
     }
 
+    public boolean isValid(String token, UserDetails userDetails) {
+        Claims claims = extractAllClaims(token);
+        String username = claims.getSubject();
+        return (username.equals(userDetails.getUsername()) && !isExpired(token));
+    }
+
     public boolean isExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
@@ -55,7 +61,7 @@ public class JwtService {
         Date expiration = new Date(now.getTime() + expirationMs);
         Set<String> roles = userDetails.getAuthorities()
                 .stream()
-                .map(authority -> "ROLE_" + authority.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
         return Jwts.builder()

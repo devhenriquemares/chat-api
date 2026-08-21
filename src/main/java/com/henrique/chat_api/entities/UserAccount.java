@@ -57,11 +57,9 @@ public class UserAccount implements UserDetails {
     private Set<UserRole> roles = new HashSet<>();
 
     public static String generatePublicID() {
-        String CHARACTERS = """
-                ABCDEFGHIJKLMNOPQRSTUVWXYZ
-                abcdefghijklmnopqrstuvwxyz
-                1234567890
-                """;
+        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                "abcdefghijklmnopqrstuvwxyz" +
+                "1234567890";
 
         return new Random()
                 .ints(10, 0, CHARACTERS.length())

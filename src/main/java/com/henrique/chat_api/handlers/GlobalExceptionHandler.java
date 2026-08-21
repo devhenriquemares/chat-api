@@ -5,6 +5,7 @@ import com.henrique.chat_api.exceptions.EmailAlreadyExistsException;
 import com.henrique.chat_api.exceptions.InvalidPasswordException;
 import com.henrique.chat_api.exceptions.OldPasswordRequiredException;
 import com.henrique.chat_api.exceptions.UserNotFoundException;
+import lombok.extern.log4j.Log4j;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
