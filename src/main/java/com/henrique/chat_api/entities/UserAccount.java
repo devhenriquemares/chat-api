@@ -2,9 +2,7 @@ package com.henrique.chat_api.entities;
 
 import com.henrique.chat_api.enums.AccountProviders;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +16,8 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "user_accounts")
 public class UserAccount implements UserDetails {
     @Id

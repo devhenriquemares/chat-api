@@ -6,6 +6,7 @@ import com.henrique.chat_api.exceptions.InvalidPasswordException;
 import com.henrique.chat_api.exceptions.OldPasswordRequiredException;
 import com.henrique.chat_api.exceptions.UserNotFoundException;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private ResponseEntity<ErrorResponseDTO> buildErrorResponse(RuntimeException exception, HttpStatus status, String code) {
@@ -44,6 +46,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> genericExceptionHandler(Exception exception) {
+        log.error("Internal server error exception", exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Something went wrong", Instant.now())
         );

@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> findByID(@PathVariable UUID userID) {
+    public ResponseEntity<UserResponseDTO> findByID(@PathVariable(name = "id") UUID userID) {
         UserResponseDTO response = userService.findByID(userID);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -31,13 +31,13 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateByID(@PathVariable UUID userID, @Valid @RequestBody UpdateLocalUserDTO request) {
+    public ResponseEntity<String> updateByID(@PathVariable(name = "id") UUID userID, @Valid @RequestBody UpdateLocalUserDTO request) {
         userService.updateByID(userID, request);
         return ResponseEntity.status(HttpStatus.OK).body("User successfully updated");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteByID(@PathVariable UUID userID) {
+    public ResponseEntity<String> deleteByID(@PathVariable(name = "id") UUID userID) {
         userService.deleteByID(userID);
         return ResponseEntity.status(HttpStatus.OK).body("User successfully deleted");
     }
