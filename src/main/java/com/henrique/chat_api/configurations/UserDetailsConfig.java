@@ -1,5 +1,6 @@
 package com.henrique.chat_api.configurations;
 
+import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.repositories.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +14,7 @@ public class UserDetailsConfig implements UserDetailsService {
     private final IUserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserAccount loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with " + username));
     }

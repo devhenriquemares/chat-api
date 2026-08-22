@@ -52,7 +52,7 @@ public class UserAccount implements UserDetails {
     @Builder.Default
     private Set<Friend> friends = new HashSet<>();
 
-    @OneToMany(mappedBy = "userAccount")
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private Set<UserRole> roles = new HashSet<>();
 

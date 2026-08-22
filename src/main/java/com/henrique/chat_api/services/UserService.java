@@ -4,7 +4,9 @@ import com.henrique.chat_api.dtos.user.CreateLocalUserDTO;
 import com.henrique.chat_api.dtos.user.UpdateLocalUserDTO;
 import com.henrique.chat_api.dtos.user.UserResponseDTO;
 import com.henrique.chat_api.entities.UserAccount;
+import com.henrique.chat_api.entities.UserRole;
 import com.henrique.chat_api.enums.AccountProviders;
+import com.henrique.chat_api.enums.Roles;
 import com.henrique.chat_api.exceptions.EmailAlreadyExistsException;
 import com.henrique.chat_api.exceptions.InvalidPasswordException;
 import com.henrique.chat_api.exceptions.OldPasswordRequiredException;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -34,6 +38,13 @@ public class UserService {
                 .provider(AccountProviders.LOCAL)
                 .publicID(UserAccount.generatePublicID())
                 .build();
+
+        UserRole defaultRole = UserRole.builder()
+                .role(Roles.USER)
+                .userAccount(user)
+                .build();
+
+        user.setRoles(Set.of(defaultRole));
 
         userRepository.save(user);
         return user;

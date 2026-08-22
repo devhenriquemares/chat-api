@@ -2,14 +2,16 @@ package com.henrique.chat_api.entities;
 
 import com.henrique.chat_api.enums.Roles;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "user_roles")
 public class UserRole {
     @Id

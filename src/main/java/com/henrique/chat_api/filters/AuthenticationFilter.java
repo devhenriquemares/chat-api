@@ -1,12 +1,17 @@
-package com.henrique.chat_api.configurations;
+package com.henrique.chat_api.filters;
 
+import com.henrique.chat_api.configurations.UserDetailsConfig;
+import com.henrique.chat_api.entities.UserAccount;
+import com.henrique.chat_api.exceptions.EmailAlreadyExistsException;
+import com.henrique.chat_api.exceptions.EmailNotVerifiedException;
 import com.henrique.chat_api.services.JwtService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,15 +24,16 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class JwtFilterConfig extends OncePerRequestFilter {
+@Slf4j
+public class AuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsConfig userDetailsConfig;
 
     @Override
     protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
     ) throws ServletException, IOException {
         try {
             final String authHeader = request.getHeader("Authorization");
@@ -43,19 +49,30 @@ public class JwtFilterConfig extends OncePerRequestFilter {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (authentication == null && email != null) {
-                UserDetails userDetails = userDetailsConfig.loadUserByUsername(email);
+                UserAccount user = userDetailsConfig.loadUserByUsername(email);
 
-                if (jwtService.isValid(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                if (!user.isVerified()) throw new EmailNotVerifiedException();
+
+                if (jwtService.isValid(token, user)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            user,
+                            null,
+                            user.getAuthorities());
+
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
 
             filterChain.doFilter(request, response);
-        } catch (Exception ex) {
+        } catch (JwtException | EmailNotVerifiedException | IllegalArgumentException ex) {
+            log.info("Authentication error", ex);
+            String message = ex instanceof EmailNotVerifiedException ? ex.getMessage() : "Invalid JWT token";
             SecurityContextHolder.clearContext();
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write(message);
         }
     }
 }
