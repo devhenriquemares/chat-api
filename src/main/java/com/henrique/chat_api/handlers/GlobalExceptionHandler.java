@@ -52,6 +52,8 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "INVALID_EMAIL_CODE");
     }
 
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> genericExceptionHandler(Exception exception) {
         log.error("Internal server error exception", exception);
