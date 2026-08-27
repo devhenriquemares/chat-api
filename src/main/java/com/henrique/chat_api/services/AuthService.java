@@ -8,6 +8,7 @@ import com.henrique.chat_api.dtos.user.UserResponseDTO;
 import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,10 +20,12 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final EmailCodeService emailCodeService;
 
     public LoggedUserResponseDTO register(CreateLocalUserDTO request) {
         UserAccount user = userService.store(request);
         TokensDTO tokens = jwtService.generateTokens(user);
+        emailCodeService.sendVerificationCode(user);
 
         return new LoggedUserResponseDTO(tokens, UserMapper.toResponse(user));
     }
@@ -34,5 +37,9 @@ public class AuthService {
         TokensDTO tokens = jwtService.generateTokens(user);
 
         return new LoggedUserResponseDTO(tokens, UserMapper.toResponse(user));
+    }
+
+    public String validateEmail(String code, UserAccount user) {
+        return emailCodeService.validate(code, user);
     }
 }

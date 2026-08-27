@@ -32,7 +32,7 @@ public class Seeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.findByEmail("adminaccount@gmail.com").isEmpty()) {
+        if (userRepository.findByEmail(adminEmail).isEmpty()) {
             log.info("Initializing admin seed");
             if (adminEmail == null || adminPassword == null) {
                 throw new Exception("Admin credentials are empty");

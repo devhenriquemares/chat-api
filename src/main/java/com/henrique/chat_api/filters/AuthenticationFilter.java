@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -21,6 +23,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -50,14 +56,17 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
             if (authentication == null && email != null) {
                 UserAccount user = userDetailsConfig.loadUserByUsername(email);
+                Set<GrantedAuthority> authorities = new HashSet<>(user.getAuthorities());
 
-                if (!user.isVerified()) throw new EmailNotVerifiedException();
+                if (user.isVerified()) {
+                    authorities.add(new SimpleGrantedAuthority("EMAIL_VERIFIED"));
+                }
 
                 if (jwtService.isValid(token, user)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             user,
                             null,
-                            user.getAuthorities());
+                            authorities);
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);

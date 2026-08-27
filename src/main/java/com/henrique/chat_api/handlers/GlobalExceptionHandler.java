@@ -1,15 +1,13 @@
 package com.henrique.chat_api.handlers;
 
 import com.henrique.chat_api.dtos.ErrorResponseDTO;
-import com.henrique.chat_api.exceptions.EmailAlreadyExistsException;
-import com.henrique.chat_api.exceptions.InvalidPasswordException;
-import com.henrique.chat_api.exceptions.OldPasswordRequiredException;
-import com.henrique.chat_api.exceptions.UserNotFoundException;
+import com.henrique.chat_api.exceptions.*;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -40,8 +38,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ErrorResponseDTO> invalidPasswordException(InvalidPasswordException exception) {
+    public ResponseEntity<ErrorResponseDTO> invalidPasswordExceptionHandler(InvalidPasswordException exception) {
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "INVALID_PASSWORD");
+    }
+
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<ErrorResponseDTO> mailExceptionHandler(MailException exception) {
+        return buildErrorResponse(exception, HttpStatus.INTERNAL_SERVER_ERROR, "MAIL_SENDING_ERROR");
+    }
+
+    @ExceptionHandler(InvalidEmailCodeException.class)
+    public ResponseEntity<ErrorResponseDTO> invalidEmailCodeExceptionHandler(InvalidEmailCodeException exception) {
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "INVALID_EMAIL_CODE");
     }
 
     @ExceptionHandler(Exception.class)

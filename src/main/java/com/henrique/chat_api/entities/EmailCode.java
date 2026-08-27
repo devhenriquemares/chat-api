@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -30,4 +32,16 @@ public class EmailCode {
 
     @Column(name = "is_expired")
     private boolean isExpired = false;
+
+    public static String generateCode() {
+        String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                "abcdefghijklmnopqrstuvwxyz" +
+                "1234567890";
+
+        return new Random()
+                .ints(6, 0, CHARACTERS.length())
+                .mapToObj(CHARACTERS::charAt)
+                .map(String::valueOf)
+                .collect(Collectors.joining());
+    }
 }
