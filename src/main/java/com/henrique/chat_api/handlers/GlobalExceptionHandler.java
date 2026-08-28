@@ -52,7 +52,10 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "INVALID_EMAIL_CODE");
     }
 
-
+    @ExceptionHandler(ChatNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> ChatNotFoundExceptionHandler(ChatNotFoundException exception) {
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "CHAT_NOT_FOUND");
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> genericExceptionHandler(Exception exception) {
