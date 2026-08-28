@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -21,6 +22,8 @@ public class Message {
 
     @Column(nullable = false)
     private String message;
+
+    private Instant timestamp = Instant.now();
 
     @ManyToOne
     @JoinColumn(name = "sender_id")

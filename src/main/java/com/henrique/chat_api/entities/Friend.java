@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,5 +27,6 @@ public class Friend {
     private UserAccount friendAccount;
     
     @OneToMany(mappedBy = "chat")
-    private Set<Message> messages = new HashSet<>();
+    @OrderBy("timestamp ASC")
+    private List<Message> messages = new ArrayList<>();
 }

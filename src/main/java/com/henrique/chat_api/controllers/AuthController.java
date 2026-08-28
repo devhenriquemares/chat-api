@@ -37,7 +37,7 @@ public class AuthController {
 
     @PostMapping("/email-code")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<String> validateEmail(@RequestBody ValidateEmailDTO request) {
+    public ResponseEntity<String> validateEmail(@Valid @RequestBody ValidateEmailDTO request) {
         UserAccount user = (UserAccount) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String response = authService.validateEmail(request.code(), user);
         return ResponseEntity.status(HttpStatus.OK).body(response);
