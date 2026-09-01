@@ -8,17 +8,23 @@ import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
+import java.util.List;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private ResponseEntity<ErrorResponseDTO> buildErrorResponse(RuntimeException exception, HttpStatus status, String code) {
+    private ResponseEntity<ErrorResponseDTO> buildErrorResponse(Exception exception, HttpStatus status, String code) {
+        return this.buildErrorResponse(exception, status, null, code);
+    }
+
+    private ResponseEntity<ErrorResponseDTO> buildErrorResponse(Exception exception, HttpStatus status, List<String> errors, String code) {
         return ResponseEntity.status(status).body(
-                new ErrorResponseDTO(status, code, exception.getMessage(), Instant.now())
+                new ErrorResponseDTO(status, code, exception.getMessage(), errors, Instant.now())
         );
     }
 
@@ -52,11 +58,16 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "INVALID_EMAIL_CODE");
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDTO> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, List.of(exception.getMessage()), "INVALID_ARGUMENTS");
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> genericExceptionHandler(Exception exception) {
         log.error("Internal server error exception", exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Something went wrong", Instant.now())
+                new ErrorResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Something went wrong", null, Instant.now())
         );
     }
 }
