@@ -12,6 +12,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,5 +42,9 @@ public class AuthService {
 
     public String validateEmail(String code, UserAccount user) {
         return emailCodeService.validate(code, user);
+    }
+
+    public static UserAccount getAuthenticationPrincipal() {
+        return (UserAccount) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

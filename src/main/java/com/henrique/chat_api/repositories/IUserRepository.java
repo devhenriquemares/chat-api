@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface IUserRepository extends JpaRepository<UserAccount, UUID> {
     boolean existsByEmail(String email);
     Optional<UserAccount> findByEmail(String email);
+    Optional<UserAccount> findByPublicID(String publicID);
 }

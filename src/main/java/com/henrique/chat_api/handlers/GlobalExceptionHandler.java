@@ -27,9 +27,9 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(exception, HttpStatus.CONFLICT, "EMAIL_ALREADY_EXISTS");
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> userNotFoundExceptionHandler(UserNotFoundException exception) {
-        return buildErrorResponse(exception, HttpStatus.NOT_FOUND, "USER_NOT_FOUND");
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> resourceNotFoundExceptionHandler(ResourceNotFoundException exception) {
+        return buildErrorResponse(exception, HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND");
     }
 
     @ExceptionHandler(OldPasswordRequiredException.class)
@@ -50,11 +50,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidEmailCodeException.class)
     public ResponseEntity<ErrorResponseDTO> invalidEmailCodeExceptionHandler(InvalidEmailCodeException exception) {
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "INVALID_EMAIL_CODE");
-    }
-
-    @ExceptionHandler(ChatNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> ChatNotFoundExceptionHandler(ChatNotFoundException exception) {
-        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "CHAT_NOT_FOUND");
     }
 
     @ExceptionHandler(Exception.class)

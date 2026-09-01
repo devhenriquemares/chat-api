@@ -6,6 +6,7 @@ import com.henrique.chat_api.entities.Message;
 import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.mappers.ChatMapper;
 import com.henrique.chat_api.repositories.IFriendRepository;
+import com.henrique.chat_api.services.AuthService;
 import com.henrique.chat_api.services.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,8 +31,7 @@ public class ChatController {
 
     @GetMapping
     public ResponseEntity<Set<ChatResponseDTO>> loadAllChats() {
-        UserAccount user = (UserAccount) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Set<ChatResponseDTO> response = chatService.loadAllChatsBy(user);
+        Set<ChatResponseDTO> response = chatService.loadAllChatsBy(AuthService.getAuthenticationPrincipal());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

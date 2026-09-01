@@ -10,14 +10,13 @@ import com.henrique.chat_api.enums.Roles;
 import com.henrique.chat_api.exceptions.EmailAlreadyExistsException;
 import com.henrique.chat_api.exceptions.InvalidPasswordException;
 import com.henrique.chat_api.exceptions.OldPasswordRequiredException;
-import com.henrique.chat_api.exceptions.UserNotFoundException;
+import com.henrique.chat_api.exceptions.ResourceNotFoundException;
 import com.henrique.chat_api.mappers.UserMapper;
 import com.henrique.chat_api.repositories.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -57,14 +56,14 @@ public class UserService {
 
     public UserResponseDTO findByID(UUID userID) {
         UserAccount user = userRepository.findById(userID)
-                .orElseThrow(() -> new UserNotFoundException(userID));
+                .orElseThrow(ResourceNotFoundException::new);
 
         return UserMapper.toResponse(user);
     }
 
     public void updateByID(UUID userID, UpdateLocalUserDTO request) {
         UserAccount user = userRepository.findById(userID)
-                .orElseThrow(() -> new UserNotFoundException(userID));
+                .orElseThrow(ResourceNotFoundException::new);
 
         if (request.username() != null) user.setName(request.username());
         if (request.email() != null) user.setEmail(request.email());
@@ -80,7 +79,7 @@ public class UserService {
 
     public void deleteByID(UUID userID) {
         UserAccount user = userRepository.findById(userID)
-                .orElseThrow(() -> new UserNotFoundException(userID));
+                .orElseThrow(ResourceNotFoundException::new);
 
         userRepository.delete(user);
     }

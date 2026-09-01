@@ -1,7 +1,0 @@
-package com.henrique.chat_api.exceptions;
-
-public class ChatNotFoundException extends RuntimeException {
-    public ChatNotFoundException() {
-        super("Chat not found");
-    }
-}

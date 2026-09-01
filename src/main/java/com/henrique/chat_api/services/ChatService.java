@@ -3,7 +3,7 @@ package com.henrique.chat_api.services;
 import com.henrique.chat_api.dtos.chat.ChatResponseDTO;
 import com.henrique.chat_api.entities.Message;
 import com.henrique.chat_api.entities.UserAccount;
-import com.henrique.chat_api.exceptions.ChatNotFoundException;
+import com.henrique.chat_api.exceptions.ResourceNotFoundException;
 import com.henrique.chat_api.mappers.ChatMapper;
 import com.henrique.chat_api.repositories.IFriendRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class ChatService {
 
     public List<Message> loadChatMessagesBy(Long chatID) {
         return friendRepository.findById(chatID)
-                .orElseThrow(ChatNotFoundException::new)
+                .orElseThrow(ResourceNotFoundException::new)
                 .getMessages();
     }
 }

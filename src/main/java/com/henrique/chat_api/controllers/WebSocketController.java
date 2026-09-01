@@ -4,15 +4,12 @@ import com.henrique.chat_api.dtos.websocket.SendMessageDTO;
 import com.henrique.chat_api.entities.Friend;
 import com.henrique.chat_api.entities.Message;
 import com.henrique.chat_api.entities.UserAccount;
-import com.henrique.chat_api.exceptions.ChatNotFoundException;
-import com.henrique.chat_api.exceptions.UserNotFoundException;
 import com.henrique.chat_api.repositories.IFriendRepository;
 import com.henrique.chat_api.repositories.IMessageRepository;
 import com.henrique.chat_api.repositories.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -30,7 +27,7 @@ public class WebSocketController {
                 .orElseThrow(ChatNotFoundException::new);
 
         UserAccount sender = userRepository.findById(payload.senderID())
-                .orElseThrow(() -> new UserNotFoundException(payload.senderID()));
+                .orElseThrow(UserNotFoundException::new);
 
         Message message = new Message();
         message.setMessage(payload.message());
