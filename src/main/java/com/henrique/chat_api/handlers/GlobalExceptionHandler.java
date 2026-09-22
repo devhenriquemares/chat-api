@@ -1,19 +1,22 @@
 package com.henrique.chat_api.handlers;
 
-import com.henrique.chat_api.dtos.ErrorResponseDTO;
+import com.henrique.chat_api.dtos.error.ErrorResponseDTO;
+import com.henrique.chat_api.dtos.error.FieldErrorDTO;
 import com.henrique.chat_api.exceptions.*;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mail.MailException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -22,7 +25,7 @@ public class GlobalExceptionHandler {
         return this.buildErrorResponse(exception, status, null, code);
     }
 
-    private ResponseEntity<ErrorResponseDTO> buildErrorResponse(Exception exception, HttpStatus status, List<String> errors, String code) {
+    private ResponseEntity<ErrorResponseDTO> buildErrorResponse(Exception exception, HttpStatus status, List<FieldErrorDTO> errors, String code) {
         return ResponseEntity.status(status).body(
                 new ErrorResponseDTO(status, code, exception.getMessage(), errors, Instant.now())
         );
@@ -60,7 +63,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
-        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, List.of(exception.getMessage()), "INVALID_ARGUMENTS");
+        List<FieldErrorDTO> errors = exception.getAllErrors()
+                .stream()
+                .map(error -> new FieldErrorDTO(
+                        ((FieldError) error).getField(),
+                        error.getDefaultMessage()
+                ))
+                .toList();
+
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, errors, "INVALID_ARGUMENTS");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> httpMessageNotReadableExceptionHandler(HttpMessageNotReadableException exception) {
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "INVALID_REQUEST_BODY");
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> badCredentialsExceptionHandler(BadCredentialsException exception) {
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, "EMAIL_OR_PASSWORD_INVALID");
     }
 
     @ExceptionHandler(Exception.class)

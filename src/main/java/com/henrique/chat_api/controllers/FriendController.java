@@ -37,14 +37,14 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("/accept/${id}")
+    @GetMapping("/accept/{id}")
     public ResponseEntity<String> acceptFriendRequest(@PathVariable("id") Long friendRequestID) {
         friendService.acceptFriendRequest(friendRequestID);
 
         return ResponseEntity.status(HttpStatus.OK).body("Friend request successfully accepted");
     }
 
-    @GetMapping("/reject/${id}")
+    @GetMapping("/reject/{id}")
     public ResponseEntity<String> rejectFriendRequest(@PathVariable("id") Long friendRequestID) {
         friendService.rejectFriendRequest(friendRequestID);
 

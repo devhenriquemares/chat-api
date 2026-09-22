@@ -1,4 +1,4 @@
-package com.henrique.chat_api.dtos;
+package com.henrique.chat_api.dtos.error;
 
 import org.springframework.http.HttpStatus;
 
@@ -9,7 +9,7 @@ public record ErrorResponseDTO(
         HttpStatus status,
         String code,
         String message,
-        List<String> errors,
+        List<FieldErrorDTO> errors,
         Instant timestamp
 ) {
 }
