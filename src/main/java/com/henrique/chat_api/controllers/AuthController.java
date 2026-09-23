@@ -15,6 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import com.henrique.chat_api.dtos.TokensDTO;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -37,15 +40,15 @@ public class AuthController {
 
     @PostMapping("/email-code")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<String> validateEmail(@Valid @RequestBody ValidateEmailDTO request) {
-        String response = authService.validateEmail(request.code(), AuthService.getAuthenticationPrincipal());
+    public ResponseEntity<TokensDTO> validateEmail(@Valid @RequestBody ValidateEmailDTO request) {
+        TokensDTO response = authService.validateEmail(request.code(), AuthService.getAuthenticationPrincipal());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/email-code")
     @PreAuthorize("hasAuthority('USER')")
-    public ResponseEntity<String> resendEmailCode() {
+    public ResponseEntity<Map<String, String>> resendEmailCode() {
         emailCodeService.sendVerificationCode(AuthService.getAuthenticationPrincipal());
-        return ResponseEntity.status(HttpStatus.OK).body("Email code resented");
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Email code resented"));
     }
 }

@@ -40,8 +40,9 @@ public class AuthService {
         return new LoggedUserResponseDTO(tokens, UserMapper.toResponse(user));
     }
 
-    public String validateEmail(String code, UserAccount user) {
-        return emailCodeService.validate(code, user);
+    public TokensDTO validateEmail(String code, UserAccount user) {
+        emailCodeService.validate(code, user);
+        return jwtService.generateTokens(user);
     }
 
     public static UserAccount getAuthenticationPrincipal() {

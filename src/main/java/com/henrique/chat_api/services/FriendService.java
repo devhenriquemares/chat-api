@@ -37,6 +37,13 @@ public class FriendService {
         friendRequestRepository.save(friendRequest);
     }
 
+    public FriendResponseDTO searchByPublicID(String publicID) {
+        UserAccount user = userRepository.findByPublicID(publicID)
+            .orElseThrow(ResourceNotFoundException::new);
+
+        return new FriendResponseDTO(UserMapper.toResponse(user));
+    }
+
     public Set<FriendResponseDTO> loadFriendsListBy(UserAccount user) {
         Set<Friend> friends = friendRepository.findAllByUserAccount(user);
 

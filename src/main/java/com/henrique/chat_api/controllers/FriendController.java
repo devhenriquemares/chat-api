@@ -37,6 +37,13 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<FriendResponseDTO> searchByPublicID(@PathVariable("id") String publicID) {
+        FriendResponseDTO response = friendService.searchByPublicID(publicID);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @GetMapping("/accept/{id}")
     public ResponseEntity<String> acceptFriendRequest(@PathVariable("id") Long friendRequestID) {
         friendService.acceptFriendRequest(friendRequestID);
