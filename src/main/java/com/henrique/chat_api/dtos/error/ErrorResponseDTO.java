@@ -6,7 +6,7 @@ import java.time.Instant;
 import java.util.List;
 
 public record ErrorResponseDTO(
-        HttpStatus status,
+        int status,
         String code,
         String message,
         List<FieldErrorDTO> errors,

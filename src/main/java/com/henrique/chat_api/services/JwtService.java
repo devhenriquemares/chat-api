@@ -1,6 +1,7 @@
 package com.henrique.chat_api.services;
 
 import com.henrique.chat_api.dtos.TokensDTO;
+import com.henrique.chat_api.entities.UserAccount;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,10 +32,10 @@ public class JwtService {
     @Value("${refresh.expiration.hours}")
     private int refreshTokenExpiration;
 
-    public TokensDTO generateTokens(UserDetails userDetails) {
+    public TokensDTO generateTokens(UserAccount user) {
         return new TokensDTO(
-                generateToken(userDetails, accessTokenExpiration),
-                generateToken(userDetails, refreshTokenExpiration)
+                generateToken(user, accessTokenExpiration),
+                generateToken(user, refreshTokenExpiration)
         );
     }
 
@@ -57,22 +58,24 @@ public class JwtService {
                 .getPayload();
     }
 
-    private String generateToken(UserDetails userDetails, int expirationHours) {
+    private String generateToken(UserAccount user, int expirationHours) {
         int expirationMs = expirationHours * 1000 * 60 * 60;
         Date now = new Date();
         Date expiration = new Date(now.getTime() + expirationMs);
-        Set<String> roles = userDetails.getAuthorities()
+
+        Set<String> roles = user.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
 
         return Jwts.builder()
-                .subject(userDetails.getUsername())
+                .subject(user.getUsername())
                 .issuedAt(now)
                 .expiration(expiration)
                 .issuer("chat-api")
                 .signWith(getKey())
                 .claim("roles", roles)
+                .claim("isVerified", user.isVerified())
                 .compact();
     }
 
