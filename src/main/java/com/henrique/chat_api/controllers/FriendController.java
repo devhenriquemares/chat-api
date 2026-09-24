@@ -38,11 +38,12 @@ public class FriendController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<FriendResponseDTO> searchByPublicID(@PathVariable("id") String publicID) {
-        FriendResponseDTO response = friendService.searchByPublicID(publicID);
+    @GetMapping("/requests")
+    public ResponseEntity<Set<FriendResponseDTO>> loadFriendRequests() {
+        UserAccount user = AuthService.getAuthenticationPrincipal();
+        Set<FriendResponseDTO> requests = friendService.loadFriendRequestsBy(user);
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(requests);
     }
 
     @GetMapping("/accept/{id}")
@@ -53,16 +54,16 @@ public class FriendController {
     }
 
     @GetMapping("/reject/{id}")
-    public ResponseEntity<String> rejectFriendRequest(@PathVariable("id") Long friendRequestID) {
+    public ResponseEntity<Map<String, String>> rejectFriendRequest(@PathVariable("id") Long friendRequestID) {
         friendService.rejectFriendRequest(friendRequestID);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Friend request successfully rejected");
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Friend request successfully rejected"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteFriend(@PathVariable("id") UUID friendID) {
+    public ResponseEntity<Map<String, String>> deleteFriend(@PathVariable("id") UUID friendID) {
         friendService.deleteFriendByID(friendID);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Friend successfully deleted");
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Friend successfully deleted"));
     }
 }

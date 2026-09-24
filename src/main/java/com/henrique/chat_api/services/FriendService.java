@@ -30,6 +30,11 @@ public class FriendService {
         UserAccount recipient = userRepository.findByPublicID(request.publicID())
                 .orElseThrow(ResourceNotFoundException::new);
 
+        /*
+        todo
+        criar verificação caso usuário envie a mesma requisição de amizade, lançando erro ou deletando a antiga e mandando uma nova
+         */
+
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setSender(sender);
         friendRequest.setRecipient(recipient);
@@ -37,18 +42,19 @@ public class FriendService {
         friendRequestRepository.save(friendRequest);
     }
 
-    public FriendResponseDTO searchByPublicID(String publicID) {
-        UserAccount user = userRepository.findByPublicID(publicID)
-            .orElseThrow(ResourceNotFoundException::new);
-
-        return new FriendResponseDTO(UserMapper.toResponse(user));
-    }
-
     public Set<FriendResponseDTO> loadFriendsListBy(UserAccount user) {
         Set<Friend> friends = friendRepository.findAllByUserAccount(user);
 
         return friends.stream()
                 .map(Friend::getFriendAccount)
+                .map(UserMapper::toResponse)
+                .map(FriendResponseDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<FriendResponseDTO> loadFriendRequestsBy(UserAccount user) {
+        return friendRequestRepository.findAllByRecipient(user).stream()
+                .map(FriendRequest::getSender)
                 .map(UserMapper::toResponse)
                 .map(FriendResponseDTO::new)
                 .collect(Collectors.toSet());

@@ -61,6 +61,13 @@ public class UserService {
         return UserMapper.toResponse(user);
     }
 
+    public UserResponseDTO findByPublicID(String publicID) {
+        UserAccount user = userRepository.findByPublicID(publicID)
+                .orElseThrow(ResourceNotFoundException::new);
+
+        return UserMapper.toResponse(user);
+    }
+
     public void updateByID(UUID userID, UpdateLocalUserDTO request) {
         UserAccount user = userRepository.findById(userID)
                 .orElseThrow(ResourceNotFoundException::new);

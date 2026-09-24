@@ -1,8 +1,12 @@
 package com.henrique.chat_api.controllers;
 
+import com.henrique.chat_api.dtos.friend.FriendResponseDTO;
 import com.henrique.chat_api.dtos.user.CreateLocalUserDTO;
 import com.henrique.chat_api.dtos.user.UpdateLocalUserDTO;
 import com.henrique.chat_api.dtos.user.UserResponseDTO;
+import com.henrique.chat_api.entities.UserAccount;
+import com.henrique.chat_api.exceptions.ResourceNotFoundException;
+import com.henrique.chat_api.mappers.UserMapper;
 import com.henrique.chat_api.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +24,15 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/search/{id}")
     public ResponseEntity<UserResponseDTO> findByID(@PathVariable(name = "id") UUID userID) {
         UserResponseDTO response = userService.findByID(userID);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/publicID/{id}")
+    public ResponseEntity<UserResponseDTO> findByPublicID(@PathVariable("id") String publicID) {
+        UserResponseDTO response = userService.findByPublicID(publicID);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
