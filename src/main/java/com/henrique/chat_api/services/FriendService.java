@@ -1,7 +1,9 @@
 package com.henrique.chat_api.services;
 
+import com.henrique.chat_api.dtos.friend.FriendRequestResponseDTO;
 import com.henrique.chat_api.dtos.friend.FriendResponseDTO;
 import com.henrique.chat_api.dtos.friend.SendFriendRequestDTO;
+import com.henrique.chat_api.dtos.user.UserResponseDTO;
 import com.henrique.chat_api.entities.Friend;
 import com.henrique.chat_api.entities.FriendRequest;
 import com.henrique.chat_api.entities.UserAccount;
@@ -14,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,18 +48,30 @@ public class FriendService {
     public Set<FriendResponseDTO> loadFriendsListBy(UserAccount user) {
         Set<Friend> friends = friendRepository.findAllByUserAccount(user);
 
-        return friends.stream()
+        Set<UserAccount> friendsAccount = friends.stream()
                 .map(Friend::getFriendAccount)
+                .filter(friendAccount -> !friendAccount.equals(user))
+                .collect(Collectors.toSet());
+
+        Set<UserAccount> usersAccount = friends.stream()
+                .map(Friend::getUserAccount)
+                .filter(friend -> !friend.equals(user))
+                .collect(Collectors.toSet());
+
+        Set<UserAccount> friendList = new HashSet<>(friendsAccount);
+        friendList.addAll(usersAccount);
+
+        return friendList.stream()
                 .map(UserMapper::toResponse)
                 .map(FriendResponseDTO::new)
                 .collect(Collectors.toSet());
     }
 
-    public Set<FriendResponseDTO> loadFriendRequestsBy(UserAccount user) {
+    public Set<FriendRequestResponseDTO> loadFriendRequestsBy(UserAccount user) {
         return friendRequestRepository.findAllByRecipient(user).stream()
-                .map(FriendRequest::getSender)
-                .map(UserMapper::toResponse)
-                .map(FriendResponseDTO::new)
+                .map(request -> new FriendRequestResponseDTO(
+                        request.getId(), UserMapper.toResponse(request.getSender())
+                ))
                 .collect(Collectors.toSet());
     }
 

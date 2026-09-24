@@ -1,5 +1,6 @@
 package com.henrique.chat_api.controllers;
 
+import com.henrique.chat_api.dtos.friend.FriendRequestResponseDTO;
 import com.henrique.chat_api.dtos.friend.FriendResponseDTO;
 import com.henrique.chat_api.dtos.friend.SendFriendRequestDTO;
 import com.henrique.chat_api.entities.UserAccount;
@@ -39,9 +40,9 @@ public class FriendController {
     }
 
     @GetMapping("/requests")
-    public ResponseEntity<Set<FriendResponseDTO>> loadFriendRequests() {
+    public ResponseEntity<Set<FriendRequestResponseDTO>> loadFriendRequests() {
         UserAccount user = AuthService.getAuthenticationPrincipal();
-        Set<FriendResponseDTO> requests = friendService.loadFriendRequestsBy(user);
+        Set<FriendRequestResponseDTO> requests = friendService.loadFriendRequestsBy(user);
 
         return ResponseEntity.status(HttpStatus.OK).body(requests);
     }

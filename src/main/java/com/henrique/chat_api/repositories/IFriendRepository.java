@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface IFriendRepository extends JpaRepository<Friend, Long> {
+    @Query("SELECT f FROM Friend f WHERE f.friendAccount = :userAccount OR f.userAccount = :userAccount")
     Set<Friend> findAllByUserAccount(UserAccount userAccount);
 
     @Query("SELECT f FROM Friend f WHERE f.friendAccount.id = :friendID")
