@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,10 +25,10 @@ public class FriendController {
     private final FriendService friendService;
 
     @PostMapping
-    public ResponseEntity<String> sendFriendRequest(@Valid @RequestBody SendFriendRequestDTO request) {
+    public ResponseEntity<Map<String, String>> sendFriendRequest(@Valid @RequestBody SendFriendRequestDTO request) {
         friendService.sendFriendRequest(request, AuthService.getAuthenticationPrincipal());
 
-        return ResponseEntity.status(HttpStatus.OK).body("Friend solicitation sent");
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Friend solicitation sent"));
     }
 
     @GetMapping
