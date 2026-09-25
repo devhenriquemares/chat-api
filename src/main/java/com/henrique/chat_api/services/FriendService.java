@@ -47,24 +47,34 @@ public class FriendService {
 
     public Set<FriendResponseDTO> loadFriendsListBy(UserAccount user) {
         Set<Friend> friends = friendRepository.findAllByUserAccount(user);
+        Set<Friend> filteredFriends = this.filterFriends(friends, user);
 
-        Set<UserAccount> friendsAccount = friends.stream()
+        return filteredFriends.stream()
                 .map(Friend::getFriendAccount)
-                .filter(friendAccount -> !friendAccount.equals(user))
-                .collect(Collectors.toSet());
-
-        Set<UserAccount> usersAccount = friends.stream()
-                .map(Friend::getUserAccount)
-                .filter(friend -> !friend.equals(user))
-                .collect(Collectors.toSet());
-
-        Set<UserAccount> friendList = new HashSet<>(friendsAccount);
-        friendList.addAll(usersAccount);
-
-        return friendList.stream()
                 .map(UserMapper::toResponse)
                 .map(FriendResponseDTO::new)
                 .collect(Collectors.toSet());
+    }
+
+    public Set<Friend> filterFriends(Set<Friend> friends, UserAccount user) {
+        Set<Friend> friendshipsAsUser = friends.stream()
+                .filter(friendship -> friendship.getUserAccount().equals(user))
+                .collect(Collectors.toSet());
+        Set<Friend> friendShipsAsFriend = friends.stream()
+                .filter(friendship -> friendship.getFriendAccount().equals(user))
+                .collect(Collectors.toSet());
+
+        for (Friend friendshipAsFriend : friendShipsAsFriend) {
+            Friend friendshipAsUser = new Friend();
+
+            friendshipAsUser.setId(friendshipAsFriend.getId());
+            friendshipAsUser.setUserAccount(friendshipAsFriend.getFriendAccount());
+            friendshipAsUser.setFriendAccount(friendshipAsFriend.getUserAccount());
+            friendshipAsUser.setMessages(friendshipAsFriend.getMessages());
+            friendshipsAsUser.add(friendshipAsUser);
+        }
+
+        return friendshipsAsUser;
     }
 
     public Set<FriendRequestResponseDTO> loadFriendRequestsBy(UserAccount user) {

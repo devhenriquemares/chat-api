@@ -7,7 +7,8 @@ public class ChatMapper {
     public static ChatResponseDTO mapToResponse(Friend chat) {
         return new ChatResponseDTO(
             chat.getId(),
-            UserMapper.toResponse(chat.getFriendAccount())
+            UserMapper.toResponse(chat.getFriendAccount()),
+            chat.getMessages()
         );
     }
 }

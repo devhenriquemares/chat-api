@@ -1,6 +1,8 @@
 package com.henrique.chat_api.services;
 
 import com.henrique.chat_api.dtos.chat.ChatResponseDTO;
+import com.henrique.chat_api.dtos.friend.FriendResponseDTO;
+import com.henrique.chat_api.entities.Friend;
 import com.henrique.chat_api.entities.Message;
 import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.exceptions.ResourceNotFoundException;
@@ -17,9 +19,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatService {
     private final IFriendRepository friendRepository;
+    private final FriendService friendService;
 
     public Set<ChatResponseDTO> loadAllChatsBy(UserAccount user) {
-        return friendRepository.findAllByUserAccount(user)
+        Set<Friend> friends =  friendRepository.findAllByUserAccount(user);
+
+        return friendService.filterFriends(friends, user)
                 .stream()
                 .map(ChatMapper::mapToResponse)
                 .collect(Collectors.toSet());

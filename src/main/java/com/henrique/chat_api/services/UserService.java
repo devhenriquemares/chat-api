@@ -68,6 +68,11 @@ public class UserService {
         return UserMapper.toResponse(user);
     }
 
+    public UserAccount findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(ResourceNotFoundException::new);
+    }
+
     public void updateByID(UUID userID, UpdateLocalUserDTO request) {
         UserAccount user = userRepository.findById(userID)
                 .orElseThrow(ResourceNotFoundException::new);

@@ -7,6 +7,8 @@ import com.henrique.chat_api.dtos.user.CreateLocalUserDTO;
 import com.henrique.chat_api.dtos.user.UserResponseDTO;
 import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.mappers.UserMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,6 +45,15 @@ public class AuthService {
     public TokensDTO validateEmail(String code, UserAccount user) {
         emailCodeService.validate(code, user);
         return jwtService.generateTokens(user);
+    }
+
+    public LoggedUserResponseDTO refreshTokens(String refreshToken) {
+        Claims claims = jwtService.extractAllClaims(refreshToken);
+        String userEmail = claims.getSubject();
+        UserAccount user = userService.findByEmail(userEmail);
+        TokensDTO tokens = jwtService.generateTokens(user);
+
+        return new  LoggedUserResponseDTO(tokens, UserMapper.toResponse(user));
     }
 
     public static UserAccount getAuthenticationPrincipal() {

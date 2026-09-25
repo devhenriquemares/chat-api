@@ -2,6 +2,7 @@ package com.henrique.chat_api.controllers;
 
 import com.henrique.chat_api.dtos.auth.LoggedUserResponseDTO;
 import com.henrique.chat_api.dtos.auth.LoginUserDTO;
+import com.henrique.chat_api.dtos.auth.RefreshTokensDTO;
 import com.henrique.chat_api.dtos.auth.ValidateEmailDTO;
 import com.henrique.chat_api.dtos.user.CreateLocalUserDTO;
 import com.henrique.chat_api.entities.UserAccount;
@@ -35,6 +36,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoggedUserResponseDTO> login(@Valid @RequestBody LoginUserDTO request) {
         LoggedUserResponseDTO response = authService.login(request);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoggedUserResponseDTO> refreshTokens(@Valid @RequestBody RefreshTokensDTO request) {
+        LoggedUserResponseDTO response = authService.refreshTokens(request.refreshToken());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 

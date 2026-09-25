@@ -3,6 +3,8 @@ package com.henrique.chat_api.handlers;
 import com.henrique.chat_api.dtos.error.ErrorResponseDTO;
 import com.henrique.chat_api.dtos.error.FieldErrorDTO;
 import com.henrique.chat_api.exceptions.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,6 +84,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponseDTO> badCredentialsExceptionHandler(BadCredentialsException exception) {
         return buildErrorResponse(exception, HttpStatus.BAD_REQUEST.value(), "EMAIL_OR_PASSWORD_INVALID");
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponseDTO> jwtExceptionHandler(ExpiredJwtException exception) {
+        return buildErrorResponse(exception, HttpStatus.UNAUTHORIZED.value(), "INVALID_TOKEN");
     }
 
     @ExceptionHandler(Exception.class)
