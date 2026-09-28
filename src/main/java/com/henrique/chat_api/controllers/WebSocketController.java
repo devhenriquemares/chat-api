@@ -1,10 +1,12 @@
 package com.henrique.chat_api.controllers;
 
+import com.henrique.chat_api.dtos.chat.MessageResponseDTO;
 import com.henrique.chat_api.dtos.websocket.SendMessageDTO;
 import com.henrique.chat_api.entities.Friend;
 import com.henrique.chat_api.entities.Message;
 import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.exceptions.ResourceNotFoundException;
+import com.henrique.chat_api.mappers.ChatMapper;
 import com.henrique.chat_api.repositories.IFriendRepository;
 import com.henrique.chat_api.repositories.IMessageRepository;
 import com.henrique.chat_api.repositories.IUserRepository;
@@ -14,6 +16,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.util.Map;
+
 @Controller
 @RequiredArgsConstructor
 public class WebSocketController {
@@ -22,7 +26,7 @@ public class WebSocketController {
     private final IUserRepository userRepository;
     private final IFriendRepository friendRepository;
 
-    @MessageMapping("/chat/send")
+    @MessageMapping("/chat")
     public void sendMessage(@Payload SendMessageDTO payload) {
         Friend chat = friendRepository.findById(payload.chatID())
                 .orElseThrow(ResourceNotFoundException::new);
@@ -36,6 +40,6 @@ public class WebSocketController {
         message.setSender(sender);
         messageRepository.save(message);
 
-        messagingTemplate.convertAndSend("/topic/chat/" + chat.getId(), payload);
+        messagingTemplate.convertAndSend("/topic/" + chat.getId(), ChatMapper.mapToResponse(message));
     }
 }

@@ -11,6 +11,6 @@ import java.util.Set;
 public record ChatResponseDTO(
         Long chatID,
         UserResponseDTO friend,
-        List<Message> messages
+        List<MessageResponseDTO> messages
 ) {
 }

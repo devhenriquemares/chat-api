@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public record MessageResponseDTO(
         UUID senderID,
+        UUID messageID,
         String message,
         Instant timestamp
 ) {
