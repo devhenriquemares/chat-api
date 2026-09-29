@@ -1,4 +1,4 @@
-package com.henrique.chat_api.dtos.websocket;
+package com.henrique.chat_api.dtos.message;
 
 import java.util.UUID;
 

@@ -1,7 +1,4 @@
-package com.henrique.chat_api.dtos.chat;
-
-import com.henrique.chat_api.entities.Friend;
-import com.henrique.chat_api.entities.UserAccount;
+package com.henrique.chat_api.dtos.message;
 
 import java.time.Instant;
 import java.util.UUID;
