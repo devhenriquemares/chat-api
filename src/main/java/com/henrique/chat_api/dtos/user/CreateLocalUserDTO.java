@@ -9,12 +9,10 @@ import jakarta.validation.constraints.*;
 public record CreateLocalUserDTO (
         @NotBlank
         @Size(min = 6, max = 255)
-        @Schema(name = "Username", example = "New User", type = "String", )
         String username,
 
         @Email
         @NotBlank
-        @Schema(name = "Username", example = "New User", type = "String")
         String email,
 
         @NotBlank
