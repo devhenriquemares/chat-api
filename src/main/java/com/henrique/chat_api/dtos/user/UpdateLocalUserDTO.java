@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-@Schema(description = "Update a local user, different from a Google user")
+@Schema(description = "Used to update a local user, different from a Google user")
 public record UpdateLocalUserDTO(
         @Size(min = 6, max = 255)
         String username,

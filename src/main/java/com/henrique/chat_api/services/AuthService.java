@@ -1,16 +1,13 @@
 package com.henrique.chat_api.services;
 
-import com.henrique.chat_api.dtos.TokensDTO;
+import com.henrique.chat_api.dtos.auth.TokensDTO;
 import com.henrique.chat_api.dtos.auth.LoggedUserResponseDTO;
 import com.henrique.chat_api.dtos.auth.LoginUserDTO;
 import com.henrique.chat_api.dtos.user.CreateLocalUserDTO;
-import com.henrique.chat_api.dtos.user.UserResponseDTO;
 import com.henrique.chat_api.entities.UserAccount;
 import com.henrique.chat_api.mappers.UserMapper;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
