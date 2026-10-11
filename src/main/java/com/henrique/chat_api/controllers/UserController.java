@@ -28,7 +28,7 @@ import java.util.UUID;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('ADMIN')")
-@Tag(name = "User Controller", description = "Users' controller, protected by jwt tokens and authorized only to admins")
+@Tag(name = "UserController", description = "Users' controller, protected by jwt tokens and authorized only to admins")
 @SecurityRequirement(name = "bearer token")
 public class UserController {
     private final UserService userService;
